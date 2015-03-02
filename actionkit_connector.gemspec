@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['eric.boersma@gmail.com']
   spec.summary       = %q{A gem for interacting with the ActionKit API.}
   spec.description   = %q{}
-  spec.homepage      = 'https://sumofus.org'
+  spec.homepage      = 'https://github.com/EricBoersma/actionkit_connector'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
