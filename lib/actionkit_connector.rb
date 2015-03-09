@@ -64,7 +64,33 @@ module ActionKitConnector
               'Content-type' => 'application/json'
           },
           :body => {
-              :type => "petitionpage",
+              :type => 'petitionpage',
+              :hidden => false,
+              :name => name,
+              :title => title,
+              :lang => lang,
+              :canonical_url => canonical_url
+          }.to_json,
+          format: :json
+      }
+      self.class.post(target, options)
+    end
+
+    # Create a donation page in your ActionKit instance.
+    #
+    # @param [String] name          The name of the page.
+    # @param [String] title         The title of the page.
+    # @param [URI]    lang          The URI string for the language of this page in the form of /rest/v1/language/{id}
+    # @param [URL]    canonical_url The canonical URL for this page.
+    def create_donation_page(name, title, lang, canonical_url)
+      target = "#{self.base_url}/donationpage/"
+      options = {
+          basic_auth: self.auth,
+          headers: {
+              'Content-type' => 'application/json'
+          },
+          :body => {
+              :type => 'donationpage',
               :hidden => false,
               :name => name,
               :title => title,
