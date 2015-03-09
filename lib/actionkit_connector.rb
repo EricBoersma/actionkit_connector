@@ -1,4 +1,4 @@
-require 'actionkit_connector/version'
+require_relative 'actionkit_connector/version'
 require 'httparty'
 
 module ActionKitConnector
