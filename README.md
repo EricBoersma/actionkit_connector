@@ -1,6 +1,6 @@
 # ActionkitConnector
 
-TODO: Write a gem description
+A basic ruby wrapper for ActionKit's API.
 
 ## Installation
 
