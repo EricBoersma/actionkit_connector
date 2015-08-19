@@ -106,17 +106,33 @@ module ActionKitConnector
     #
     # @param [String] page_name The ActionKit name of the page on which the action is being taken.
     # @param [String] email     The email address of the person taking action.
-    def create_action(page_name, email)
+    def create_action(page_name, email, options={})
       target = "#{self.base_url}/action/"
+      body = { page: page_name, email: email }.merge self.parse_action_options(options)
       options = {
           basic_auth: self.auth,
-          body: {
-              page: page_name,
-              email: email
-          },
+          body: body,
           format: :json
       }
       self.class.post(target, options)
+    end
+
+    def parse_action_options(options)
+      included_options = {}
+      acceptable_options = [
+          :ip_address, :is_forwarded, :link,
+          :mailing, :referring_mailing, :referring_user
+      ]
+      options.each_key do |key|
+        if acceptable_options.include? key.to_sym
+          included_options[key.to_sym] = options[key]
+        elsif key.to_s.start_with? 'action_'
+          # ActionKit allows for custom fields to be entered into an action by prepending
+          # their name with 'action_'
+          included_options[key.to_sym] = options[key]
+        end
+      end
+      included_options
     end
   end
 end
