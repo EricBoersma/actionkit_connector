@@ -68,7 +68,7 @@ module ActionKitConnector
               :hidden => false,
               :name => name,
               :title => title,
-              :lang => lang,
+              :language => lang,
               :canonical_url => canonical_url
           }.to_json,
           format: :json
@@ -94,7 +94,7 @@ module ActionKitConnector
               :hidden => false,
               :name => name,
               :title => title,
-              :lang => lang,
+              :language => lang,
               :canonical_url => canonical_url
           }.to_json,
           format: :json
