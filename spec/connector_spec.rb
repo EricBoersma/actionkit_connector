@@ -2,6 +2,8 @@ require 'spec_helper'
 require_relative '../lib/actionkit_connector'
 
 describe 'Connector' do
+  let(:client) { ActionKitConnector::Connector.new('username', 'password', 'http://api.example.com') }
+
   before :each do
     @connector = ActionKitConnector::Connector.new 'username', 'password', 'url'
   end
@@ -27,8 +29,19 @@ describe 'Connector' do
     expect(@connector.parse_action_options({'action_foo' => 'test', not_an_action: 'bad'})).to eq({action_foo: 'test'})
   end
 
+  describe '#find_petition_pages' do
+    before do
+       stub_request(:get, "http://username:password@api.example.com/petitionpage/?_limit=10&_offset=0&name=foo-bar")
+    end
+
+    it "finds petition pages matching a given name" do
+      client.find_petition_pages("foo-bar")
+
+      expect(WebMock).to have_requested(:get, "http://username:password@api.example.com/petitionpage/?_limit=10&_offset=0&name=foo-bar")
+    end
+  end
+
   describe "#create_petition_page" do
-    let(:client) { ActionKitConnector::Connector.new('username', 'password', 'http://api.example.com') }
 
     let(:request_body) do
       { type: 'petitionpage',
