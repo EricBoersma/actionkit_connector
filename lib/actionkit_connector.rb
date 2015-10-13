@@ -42,6 +42,26 @@ module ActionKitConnector
       self.class.get(target, options)
     end
 
+    # Find petition pages matching a given name.
+    #
+    # @param [Int] offset The number of records to skip.
+    # @param [Int] limit  The maximum number of results to return.
+    # @param [String] name The string to match against name.
+    def find_petition_pages(name, limit: 10, offset: 0)
+      target = "#{self.base_url}/petitionpage/"
+
+      options = {
+          basic_auth: self.auth,
+          query: {
+            _limit: limit,
+            _offset: offset,
+            name: name
+          }
+      }
+
+      self.class.get(target, options)
+    end
+
     # Returns the information for a single PetitionPage.
     #
     # @param [Int] id The ID of the page to return.
