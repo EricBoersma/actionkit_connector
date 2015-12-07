@@ -63,5 +63,105 @@ describe 'Connector' do
         with(body: request_body)
     end
   end
+
+  # Used for the donation validations below.
+  let(:full_donation_options) {
+    {
+        donationpage: {
+            name: 'donation',
+            payment_account: 'Default Import Stub'
+        },
+        order: {
+            amount: '1',
+            card_num: '4111111111111111',
+            card_code: '007',
+            exp_date_month: '01',
+            exp_date_year: '2016'
+        },
+        user: {
+            email: 'eric@sumofus.org',
+            country: 'United States',
+        }
+    }
+  }
+
+  describe '#create_donation_action' do
+    let(:request_body) {
+      full_donation_options.to_json
+    }
+
+    before do
+      stub_request(:post, "http://username:password@api.example.com/donationpush/").
+          with(body: request_body)
+    end
+
+    it 'creates a donationpush action' do
+      client.create_donation_action(full_donation_options)
+      expect(WebMock).to have_requested(:post, 'http://username:password@api.example.com/donationpush/').
+        with(body: request_body, headers: {'Content-Type' => 'application/json'})
+    end
+  end
+
+  describe 'donation validation methods' do
+    let(:expected_donationpage) {
+      full_donation_options[:donationpage]
+    }
+    let(:expected_order) {
+      full_donation_options[:order]
+    }
+    let(:expected_user) {
+      full_donation_options[:user]
+    }
+    describe '#validate_donation_options' do
+      it 'sends back the correct options when provided a valid hash' do
+        expect(client.validate_donation_options(full_donation_options)).to eq(full_donation_options)
+      end
+
+      it 'raises when provided an incorrect set of base hash values' do
+        expect { client.validate_donation_options({}) }.to raise_error(RuntimeError)
+      end
+    end
+
+    describe '#validate_donationpage_options' do
+      it 'sends back the correct options when provided a valid hash' do
+        expect(client.validate_donationpage_options(expected_donationpage)).to eq(expected_donationpage)
+      end
+
+      it 'raises when provided an incorrect set of hash values' do
+        expect { client.validate_donationpage_options({}) }.to raise_error(RuntimeError)
+      end
+    end
+
+    describe '#validate_donation_user_options' do
+      it 'sends back the correct options when provided a valid hash' do
+        expect(client.validate_donation_user_options(expected_user)).to eq(expected_user)
+      end
+
+      it 'raises when provided an incorrect set of hash values' do
+        expect { client.validate_donation_user_options({}) }.to raise_error(RuntimeError)
+      end
+    end
+
+    describe '#validate_donation_order_options' do
+      it 'sends back the correct options when provided a correct hash' do
+        expect(client.validate_donation_order_options(expected_order)).to eq(expected_order)
+      end
+
+      it 'raises when provided an incorrect set of hash values' do
+        expect { client.validate_donation_order_options({}) }.to raise_error(RuntimeError)
+      end
+
+      it 'fills in default values if they are not provided' do
+        sent_values = expected_order.tap { |hash|
+          hash.delete(:card_num)
+          hash.delete(:card_code)
+        }
+        expect(client.validate_donation_order_options(sent_values)).to eq(expected_order)
+      end
+    end
+
+  end
+
+
 end
 
