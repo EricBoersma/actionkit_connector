@@ -137,6 +137,22 @@ module ActionKitConnector
       self.class.post(target, options)
     end
 
+    # Creates an action which registers a donation with a user account.
+    #
+    # @param [Hash] options The hash of values sent to ActionKit which contain information about this transaction.
+    def create_donation_action(options={})
+      target = "#{self.base_url}/donationpush/"
+      options = self.validate_donation_options(options)
+      page_opts = {
+          basic_auth: self.auth,
+          body: options.to_json,
+          headers: {
+              'Content-Type' => 'application/json'
+          }
+      }
+      self.class.post(target, page_opts)
+    end
+
     def parse_action_options(options)
       included_options = {}
       acceptable_options = [
@@ -153,6 +169,52 @@ module ActionKitConnector
         end
       end
       included_options
+    end
+
+    def validate_donation_options(options)
+      required_base_keys = [:donationpage, :order, :user]
+      if required_base_keys.all? {|s| options.key? s}
+        options[:donationpage] = validate_donationpage_options(options[:donationpage])
+        options[:order] = validate_donation_order_options(options[:order])
+        options[:user] = validate_donation_user_options(options[:user])
+      else
+        raise 'Donation options require donationpage, order and user keys in the base hash.'
+      end
+      options
+    end
+
+    def validate_donationpage_options(options)
+      required_base_keys = [:name, :payment_account]
+      if required_base_keys.all? {|s| options.key? s}
+        options
+      else
+        raise 'Donation Page options require name and payment_account keys in the hash.'
+      end
+    end
+
+    def validate_donation_order_options(options)
+      required_base_keys = [:amount, :exp_date_month, :exp_date_year]
+      if required_base_keys.all? {|s| options.key? s}
+        if options[:card_num].nil?
+          options[:card_num] = '4111111111111111' # Default placeholder card number.
+        end
+
+        if options[:card_code].nil?
+          options[:card_code] = '007' # Default AK Card Code.
+        end
+      else
+        raise 'Donation Order options require amount, exp_date_month and exp_date_year keys.'
+      end
+      options
+    end
+
+    def validate_donation_user_options(options)
+      required_base_keys = [:email, :country]
+      if required_base_keys.all? {|s| options.key? s}
+        options
+      else
+        raise 'Donation User options require email and country keys in the hash.'
+      end
     end
   end
 end
