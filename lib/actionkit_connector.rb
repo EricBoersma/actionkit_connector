@@ -81,7 +81,7 @@ module ActionKitConnector
       options = {
           basic_auth: self.auth,
           headers: {
-              'Content-type' => 'application/json'
+              'Content-type' => 'application/json; charset=UTF-8'
           },
           :body => {
               :type => 'petitionpage',
@@ -107,7 +107,7 @@ module ActionKitConnector
       options = {
           basic_auth: self.auth,
           headers: {
-              'Content-type' => 'application/json'
+              'Content-type' => 'application/json; charset=UTF-8'
           },
           :body => {
               :type => 'donationpage',
@@ -131,8 +131,9 @@ module ActionKitConnector
       body = { page: page_name, email: email }.merge self.parse_action_options(options)
       options = {
           basic_auth: self.auth,
-          body: body,
-          format: :json
+          body: body.to_json,
+          format: :json,
+          headers: {'Content-Type' => 'application/json; charset=UTF-8'}
       }
       self.class.post(target, options)
     end
@@ -147,7 +148,7 @@ module ActionKitConnector
           basic_auth: self.auth,
           body: options.to_json,
           headers: {
-              'Content-Type' => 'application/json'
+              'Content-Type' => 'application/json; charset=UTF-8'
           }
       }
       self.class.post(target, page_opts)
@@ -157,7 +158,8 @@ module ActionKitConnector
       included_options = {}
       acceptable_options = [
           :ip_address, :is_forwarded, :link,
-          :mailing, :referring_mailing, :referring_user
+          :mailing, :referring_mailing, :referring_user,
+          :name
       ]
       options.each_key do |key|
         if acceptable_options.include? key.to_sym
