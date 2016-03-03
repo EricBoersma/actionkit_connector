@@ -154,6 +154,14 @@ module ActionKitConnector
       self.class.post(target, page_opts)
     end
 
+    # Gets all information about a user based on the given ID.
+    #
+    # @param [Int] id The ID of the user record to retrieve.
+    def user(id)
+      target = "#{self.base_url}/user/#{id.to_s}/"
+      self.class.get(target, {basic_auth: self.auth})
+    end
+
     def parse_action_options(options)
       included_options = {}
       acceptable_options = [
