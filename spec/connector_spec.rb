@@ -52,6 +52,23 @@ describe 'Connector' do
     end
   end
 
+  describe '#list_users' do
+    before do
+      stub_request(:get, 'http://username:password@api.example.com/user/?_limit=20&_offset=0')
+      stub_request(:get, 'http://username:password@api.example.com/user/?_limit=50&_offset=100')
+    end
+
+    it 'finds a list of pages with default params' do
+      client.list_users
+      expect(WebMock).to have_requested(:get, 'http://username:password@api.example.com/user/?_limit=20&_offset=0')
+    end
+
+    it 'correctly changes params' do
+      client.list_users 100, 50
+      expect(WebMock).to have_requested(:get, 'http://username:password@api.example.com/user/?_limit=50&_offset=100')
+    end
+  end
+
   describe '#petition_page' do
     before do
       stub_request(:get, 'http://username:password@api.example.com/petitionpage/100/')
