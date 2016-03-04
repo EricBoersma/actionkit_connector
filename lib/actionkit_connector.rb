@@ -162,6 +162,22 @@ module ActionKitConnector
       self.class.get(target, {basic_auth: self.auth})
     end
 
+    # Lists users in your instance.
+    #
+    # @param [Int] offset The number of records to skip.
+    # @param [Int] limit  The maximum number of results to return.
+    def list_users(offset=0, limit=20)
+      target = "#{self.base_url}/user/"
+      options = {
+          basic_auth: self.auth,
+          query: {
+              _limit: limit,
+              _offset: offset
+          }
+      }
+      self.class.get(target, options)
+    end
+
     def parse_action_options(options)
       included_options = {}
       acceptable_options = [
